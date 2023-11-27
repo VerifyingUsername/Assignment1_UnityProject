@@ -7,7 +7,7 @@ public enum PlayerStateType
 {
     MOVEMENT = 0,
     ATTACK,
-    
+    TAUNT,
 }
 
 public class PlayerState : FSMState
@@ -82,6 +82,44 @@ public class PlayerState_MOVEMENT : PlayerState
     }
 }
 
+public class PlayerState_TAUNT : PlayerState
+{
+    private string mTauntAnimationName = "TauntTrigger";
+    private bool mIsTaunting = false;
+
+    public PlayerState_TAUNT(Player player) : base(player)
+    {
+        mId = (int)(PlayerStateType.TAUNT);
+    }
+
+    public override void Enter()
+    {
+        base.Enter();
+
+        mPlayer.mAnimator.SetTrigger(mTauntAnimationName);
+        mIsTaunting = true;
+    }
+
+    public override void Exit()
+    {
+        Debug.Log("Exit Taunt");
+        mIsTaunting = false;
+    }
+
+    public override void Update()
+    {
+        base.Update();
+
+        if (mIsTaunting && !mPlayer.mAnimator.GetCurrentAnimatorStateInfo(0).IsName(mTauntAnimationName))
+        {
+            // The taunt animation has finished
+            mPlayer.mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
+        }
+    }
+}
+
+
+
 public class PlayerState_ATTACK : PlayerState
 {
     private int mAttackID = 0;
@@ -110,9 +148,9 @@ public class PlayerState_ATTACK : PlayerState
     public override void Enter()
     {
         base.Enter();
-        
 
-        if(!IsTriggered)
+        
+        if (!IsTriggered)
         {
             mAttackName = "Attack" + (mAttackID + 1).ToString() + "Trigger";
             mPlayer.mAnimator.SetTrigger(mAttackName);

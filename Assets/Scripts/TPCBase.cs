@@ -33,16 +33,7 @@ namespace PGGE
 
         public void RepositionCamera()
         {
-            //-------------------------------------------------------------------
-            // Implement here.
-            //-------------------------------------------------------------------
-            //-------------------------------------------------------------------
-            // Hints:
-            //-------------------------------------------------------------------
-            // check collision between camera and the player.
-            // find the nearest collision point to the player
-            // shift the camera position to the nearest intersected point
-            //-------------------------------------------------------------------
+            
         }
 
         public abstract void Update();

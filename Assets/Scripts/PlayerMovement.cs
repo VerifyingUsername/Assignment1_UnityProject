@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController mCharacterController;
     public Animator mAnimator;
 
-    public float mWalkSpeed = 1.5f;
+    public static float mWalkSpeed = 1.5f;
     public float mRotationSpeed = 50.0f;
     public bool mFollowCameraForward = false;
     public float mTurnRate = 10.0f;

@@ -6,69 +6,103 @@ using PGGE;
 
 public class Player : MonoBehaviour
 {
-      [HideInInspector]
-      public FSM mFsm = new FSM();
-      public Animator mAnimator;
-      public PlayerMovement mPlayerMovement;
+    [HideInInspector]
+    public FSM mFsm = new FSM();
+    public Animator mAnimator;
+    public PlayerMovement mPlayerMovement;
 
-      //[HideInInspector]
-      public bool[] mAttackButtons = new bool[3];
+    //[HideInInspector]
+    public bool[] mAttackButtons = new bool[3];
 
-      public LayerMask mPlayerMask;
-      public AudioSource mAudioSource;
-      public AudioClip YMCA;
+    public LayerMask mPlayerMask;
+    public AudioSource mAudioSource;
+    public AudioClip YMCA;
 
-      // Start is called before the first frame update
-      void Start()
-      {
-            mFsm.Add(new PlayerState_MOVEMENT(this));
-            mFsm.Add(new PlayerState_ATTACK(this));
-            //mFsm.Add(new PlayerState_RELOAD(this));
-            mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
+    // Start is called before the first frame update
+    void Start()
+    {
+        mFsm.Add(new PlayerState_MOVEMENT(this));
+        mFsm.Add(new PlayerState_ATTACK(this));
+        mFsm.Add(new PlayerState_TAUNT(this));
+        mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
 
-            PlayerConstants.PlayerMask = mPlayerMask;
-      }
+        mAudioSource = GetComponent<AudioSource>();
 
-      void Update()
-      {
-            mFsm.Update();
+        PlayerConstants.PlayerMask = mPlayerMask;
+    }
 
-    
+    void Update()
+    {
+        mFsm.Update();
 
-            if (Input.GetButtonDown("leftPunch"))
+
+
+        if (Input.GetButtonDown("leftPunch"))
+        {
+            mAttackButtons[0] = true;
+            mAttackButtons[1] = false;
+            mAttackButtons[2] = false;
+        }
+
+        else if (Input.GetButtonDown("rightPunch"))
+        {
+            mAttackButtons[0] = false;
+            mAttackButtons[1] = true;
+            mAttackButtons[2] = false;
+        }
+
+        else if (Input.GetButtonDown("standingKick"))
+        {
+            mAttackButtons[0] = false;
+            mAttackButtons[1] = false;
+            mAttackButtons[2] = true;
+        }
+        else
+        {
+            mAttackButtons[0] = false;
+            mAttackButtons[1] = false;
+            mAttackButtons[2] = false;
+        }
+
+        if (mAnimator.GetBool("IsDancing"))
+        {         
+            if (Input.GetButtonDown("ymcaDance"))
             {
-                  mAttackButtons[0] = true;
-                  mAttackButtons[1] = false;
-                  mAttackButtons[2] = false;
-            }         
-
-            else if (Input.GetButtonDown("rightPunch"))
-            {
-                  mAttackButtons[0] = false;
-                  mAttackButtons[1] = true;
-                  mAttackButtons[2] = false;
+                Debug.Log("Stop!!");
+                mAnimator.SetBool("IsDancing", false);
+                mAudioSource.Stop();
             }
-            
-            else if (Input.GetButton("standingKick"))
+        }
+        else
+        {
+            // Check if the player is not already dancing
+            if (Input.GetButtonDown("ymcaDance"))
             {
-                  mAttackButtons[0] = false;
-                  mAttackButtons[1] = false;
-                  mAttackButtons[2] = true;
+                mAnimator.SetBool("IsDancing", true);
+                mAudioSource.PlayOneShot(YMCA);
             }
-            else
-            {
-                  mAttackButtons[0] = false;
-                  mAttackButtons[1] = false;
-                  mAttackButtons[2] = false;
-            }
-      }
+        }
+
+        if(Input.GetButtonDown("Taunt"))
+        {
+            mFsm.SetCurrentState((int)PlayerStateType.TAUNT);
+            PlayerMovement.mWalkSpeed = 0;
+        }
+        else
+        {
+            PlayerMovement.mWalkSpeed = 1.5f;
+        }
+    }
 
 
-      public void Move()
-      {
+    public void Move()
+    {
+        if (!mAnimator.GetBool("IsDancing"))
+        {
             mPlayerMovement.HandleInputs();
             mPlayerMovement.Move();
-      }
+        }
+    }
 
-  
+
 }
