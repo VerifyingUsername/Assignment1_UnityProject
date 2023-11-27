@@ -7,7 +7,7 @@ public enum PlayerStateType
 {
     MOVEMENT = 0,
     ATTACK,
-    RELOAD,
+    
 }
 
 public class PlayerState : FSMState
@@ -55,21 +55,7 @@ public class PlayerState_MOVEMENT : PlayerState
     {
         base.Update();
 
-        // For Student ---------------------------------------------------//
-        // Implement the logic of player movement. 
-        //----------------------------------------------------------------//
-        // Hint:
-        //----------------------------------------------------------------//
-        // You should remember that the logic for movement
-        // has already been implemented in PlayerMovement.cs.
-        // So, how do we make use of that?
-        // We certainly do not want to copy and paste the movement 
-        // code from PlayerMovement to here.
-        // Think of a way to call the Move method. 
-        //
-        // You should also
-        // check if fire buttons are pressed so that 
-        // you can transit to ATTACK state.
+        
 
         mPlayer.Move();
 
@@ -77,20 +63,15 @@ public class PlayerState_MOVEMENT : PlayerState
         {
             if (mPlayer.mAttackButtons[i])
             {
-                if (mPlayer.mBulletsInMagazine > 0)
-                {
-                    PlayerState_ATTACK attack =
+                PlayerState_ATTACK attack =
                   (PlayerState_ATTACK)mFsm.GetState(
                             (int)PlayerStateType.ATTACK);
 
-                    attack.AttackID = i;
-                    mPlayer.mFsm.SetCurrentState(
-                        (int)PlayerStateType.ATTACK);
-                }
-                else
-                {
-                    Debug.Log("No more ammo left");
-                }
+                attack.AttackID = i;
+                mPlayer.mFsm.SetCurrentState(
+                    (int)PlayerStateType.ATTACK);
+
+                //mPlayer.mAnimator.SetTrigger("leftPunch");
             }
         }
     }
@@ -105,6 +86,8 @@ public class PlayerState_ATTACK : PlayerState
 {
     private int mAttackID = 0;
     private string mAttackName;
+
+    private bool IsTriggered = false;
 
     public int AttackID
     {
@@ -126,117 +109,48 @@ public class PlayerState_ATTACK : PlayerState
 
     public override void Enter()
     {
-        mPlayer.mAnimator.SetBool(mAttackName, true);
+        base.Enter();
+        //mPlayer.mAnimator.SetBool(mAttackName, true);
+        //mPlayer.mAnimator.SetTrigger(mAttackName);
+
+        if(!IsTriggered)
+        {
+            mAttackName = "Attack" + (mAttackID + 1).ToString() + "Trigger";
+            mPlayer.mAnimator.SetTrigger(mAttackName);
+            IsTriggered = true;
+        }
+
+        
     }
     public override void Exit()
     {
-        mPlayer.mAnimator.SetBool(mAttackName, false);
+        //mPlayer.mAnimator.SetBool(mAttackName, false);
+        IsTriggered = false;
     }
     public override void Update()
     {
         base.Update();
 
-        // For Student ---------------------------------------------------//
-        // Implement the logic of attack, reload and revert to movement. 
-        //----------------------------------------------------------------//
-        // Hint:
-        //----------------------------------------------------------------//
-        // 1. Transition to RELOAD
-        // Notice that we have three variables, viz., 
-        // mAmunitionCount
-        // mBulletsInMagazine
-        // mMaxAmunitionBeforeReload
-        // You will need to make use of these variables while
-        // implementing the transition to RELOAD.
-        //
-        // 2. Staying in ATTACK state
-        // You should stay in ATTACK state as long as the 
-        // Fire buttons are pressed. During ATTACK state
-        // you should trigger the correct ATTACK animation
-        // based on which button is pressed and shoot bullets.
-        // Every bullet shot should reduce the count of mAmunitionCount
-        // and mBulletsInMagazine.
-        // Once mBulletsInMagazine reaches to 0 you should 
-        // transit to RELOAD state.
-        //
-        // 3. Transition to MOVEMENT state
-        // You should transit to MOVEMENT state when any of the 
-        // following two situations happen.
-        // First you have exhausted all your bullets, that means your
-        // mAmunitionCount is 0 or if you do not press any of the
-        // Fire buttons.
-        // Discuss with your tutor if you find any difficulties
-        // in implementing this section.        
         
-        // For tutor - start ---------------------------------------------//
-        Debug.Log("Ammo count: " + mPlayer.mAmunitionCount + ", In Magazine: " + mPlayer.mBulletsInMagazine);
-        if (mPlayer.mBulletsInMagazine == 0 && mPlayer.mAmunitionCount > 0)
-        {
-            mPlayer.mFsm.SetCurrentState((int)PlayerStateType.RELOAD);
-            return;
-        }
-
-        if (mPlayer.mAmunitionCount <= 0 && mPlayer.mBulletsInMagazine <= 0)
-        {
-            mPlayer.mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
-            mPlayer.NoAmmo();
-            return;
-        }
 
         if (mPlayer.mAttackButtons[mAttackID])
         {
-            mPlayer.mAnimator.SetBool(mAttackName, true);
-            mPlayer.Fire(AttackID);
+            if (!IsTriggered)
+            {
+
+                mPlayer.mAnimator.SetTrigger(mAttackName);
+                IsTriggered = true;
+            }
+            
         }
         else
         {
-            mPlayer.mAnimator.SetBool(mAttackName, false);
+            //mPlayer.mAnimator.SetBool(mAttackName, false);
+            IsTriggered = false;
             mPlayer.mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
         }
-        // For tutor - end   ---------------------------------------------//
+        
     }
 }
 
-public class PlayerState_RELOAD : PlayerState
-{
-    public float ReloadTime = 3.0f;
-    float dt = 0.0f;
-    public int previousState;
-    public PlayerState_RELOAD(Player player) : base(player)
-    {
-        mId = (int)(PlayerStateType.RELOAD);
-    }
 
-    public override void Enter()
-    {
-        mPlayer.mAnimator.SetTrigger("Reload");
-        mPlayer.Reload();
-        dt = 0.0f;
-    }
-    public override void Exit()
-    {
-        if (mPlayer.mAmunitionCount > mPlayer.mMaxAmunitionBeforeReload)
-        {
-            mPlayer.mBulletsInMagazine += mPlayer.mMaxAmunitionBeforeReload;
-            mPlayer.mAmunitionCount -= mPlayer.mBulletsInMagazine;
-        }
-        else if (mPlayer.mAmunitionCount > 0 && mPlayer.mAmunitionCount < mPlayer.mMaxAmunitionBeforeReload)
-        {
-            mPlayer.mBulletsInMagazine += mPlayer.mAmunitionCount;
-            mPlayer.mAmunitionCount = 0;
-        }
-    }
-
-    public override void Update()
-    {
-        dt += Time.deltaTime;
-        if (dt >= ReloadTime)
-        {
-            mPlayer.mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
-        }
-    }
-
-    public override void FixedUpdate()
-    {
-    }
-}
