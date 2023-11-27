@@ -110,8 +110,7 @@ public class PlayerState_ATTACK : PlayerState
     public override void Enter()
     {
         base.Enter();
-        //mPlayer.mAnimator.SetBool(mAttackName, true);
-        //mPlayer.mAnimator.SetTrigger(mAttackName);
+        
 
         if(!IsTriggered)
         {
@@ -123,8 +122,7 @@ public class PlayerState_ATTACK : PlayerState
         
     }
     public override void Exit()
-    {
-        //mPlayer.mAnimator.SetBool(mAttackName, false);
+    {      
         IsTriggered = false;
     }
     public override void Update()
@@ -144,8 +142,7 @@ public class PlayerState_ATTACK : PlayerState
             
         }
         else
-        {
-            //mPlayer.mAnimator.SetBool(mAttackName, false);
+        {          
             IsTriggered = false;
             mPlayer.mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
         }

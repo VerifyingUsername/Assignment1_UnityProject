@@ -60,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
         speed = mWalkSpeed;
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            speed = mWalkSpeed * 2.0f;
+            speed = mWalkSpeed * 5.0f;
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
