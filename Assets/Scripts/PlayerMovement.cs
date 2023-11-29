@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController mCharacterController;
     public Animator mAnimator;
 
+    public static bool isDead = false;
+
     public static float mWalkSpeed = 1.5f;
     public float mRotationSpeed = 50.0f;
     public bool mFollowCameraForward = false;
@@ -31,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         mCharacterController = GetComponent<CharacterController>();
+        isDead = false;
     }
 
     void Update()
@@ -78,6 +81,30 @@ public class PlayerMovement : MonoBehaviour
             crouch = !crouch;
             Crouch();
         }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            StartCoroutine(DieCoroutine());   
+        }
+
+        if (Input.GetButtonDown("Taunt"))
+        {           
+            mWalkSpeed = 0;
+        }
+        else
+        {
+            mWalkSpeed = 1.5f;
+        }
+    }
+
+    public IEnumerator DieCoroutine()
+    {
+        mAnimator.SetTrigger("Die");     
+      
+        yield return new WaitForSeconds(3.5f);
+
+        isDead = true;
+        
     }
 
     public void Move()

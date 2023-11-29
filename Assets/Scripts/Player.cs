@@ -83,15 +83,12 @@ public class Player : MonoBehaviour
             }
         }
 
-        if(Input.GetButtonDown("Taunt"))
+        if (Input.GetButtonDown("Taunt"))
         {
             mFsm.SetCurrentState((int)PlayerStateType.TAUNT);
-            PlayerMovement.mWalkSpeed = 0;
         }
-        else
-        {
-            PlayerMovement.mWalkSpeed = 1.5f;
-        }
+
+        
     }
 
 

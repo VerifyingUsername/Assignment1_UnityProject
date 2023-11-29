@@ -54,12 +54,9 @@ namespace PGGE
             Vector3 newCamPos = mCameraTransform.position - mPlayerPos;
            
             hits = Physics.RaycastAll(mPlayerPos, newCamPos, maxDistance, wallMask);
-
             
             float nearestDistance = float.MaxValue;
             RaycastHit nearestCollisionPoint;
-
-            
 
             foreach (RaycastHit hit in hits)
             {
@@ -72,8 +69,7 @@ namespace PGGE
 
 
                         if (nearestDistance < Mathf.Infinity)
-                        {
-                            
+                        {                        
                             mCameraTransform.position = nearestCollisionPoint.point;
                         }
                     }
