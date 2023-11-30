@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class FootSteps : MonoBehaviour
 {
+    // Audio Clips
     [SerializeField]
     private AudioClip[] sandClips;
 
@@ -22,14 +23,20 @@ public class FootSteps : MonoBehaviour
     [SerializeField]
     private AudioClip[] concreteClips;
 
+
+    // Audiosource component
     private AudioSource audioSource;
 
+
+    // Bool floors
     private bool onWater = false;
     private bool onSand = false;
     private bool onGrass = false;
     private bool onWood = false;
     private bool onMetal = false;
     private bool onConcrete = false;
+
+
 
     private void Awake()
     {
@@ -40,43 +47,58 @@ public class FootSteps : MonoBehaviour
     {
         AudioClip clip;
 
+        // Plays random range from the floor arrays length
         if (onWater == true)
         {
             clip = waterClips[Random.Range(0, waterClips.Length)];
-            audioSource.PlayOneShot(clip);
         }
 
         else if (onSand == true)
         {
             clip = sandClips[Random.Range(0, sandClips.Length)];
-            audioSource.PlayOneShot(clip);
         }
 
         else if (onGrass == true)
         {
             clip = grassClips[Random.Range(0, grassClips.Length)];
-            audioSource.PlayOneShot(clip);
         }
 
         else if (onWood == true)
         {
             clip = woodClips[Random.Range(0, woodClips.Length)];
-            audioSource.PlayOneShot(clip);
         }
 
         else if (onMetal == true)
         {
             clip = metalClips[Random.Range(0, metalClips.Length)];
-            audioSource.PlayOneShot(clip);
         }
 
         else if (onConcrete == true)
         {
             clip = concreteClips[Random.Range(0, concreteClips.Length)];
-            audioSource.PlayOneShot(clip);
         }
+        else
+        {
+            // If none of the floor types match, exit the method
+            return;
+        }
+
+        // Random pitch and volume
+        float randomPitch = Random.Range(0.5f, 1.5f); 
+        float randomVolume = Random.Range(0.5f, 1.0f);
+
+        // Apply random pitch and volume to the AudioSource
+        audioSource.pitch = randomPitch;
+        audioSource.volume = randomVolume;
+
+        // Play the audio clip
+        audioSource.PlayOneShot(clip);
+      
     }
 
+
+
+    // Checks for trigger collider
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Water")
@@ -112,6 +134,7 @@ public class FootSteps : MonoBehaviour
         Step();
     }
 
+    // Exits the trigger whenever its false
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.tag == "Water")
