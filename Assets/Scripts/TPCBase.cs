@@ -35,17 +35,6 @@ namespace PGGE
 
         public void RepositionCamera()
         {
-            //-------------------------------------------------------------------
-            // Implement here.
-            //-------------------------------------------------------------------
-            //-------------------------------------------------------------------
-            // Hints:
-            //-------------------------------------------------------------------
-            // check collision between camera and the player.
-            // find the nearest collision point to the player
-            // shift the camera position to the nearest intersected point
-            //-------------------------------------------------------------------
-
             LayerMask wallMask = LayerMask.GetMask("Wall");
             RaycastHit[] hits;
             float maxDistance = 3f;
@@ -60,7 +49,7 @@ namespace PGGE
 
             foreach (RaycastHit hit in hits)
             {
-                if (hit.transform != mPlayerTransform && hit.collider.tag != "IgnoreCameraCollision")
+                if (hit.transform != mPlayerTransform)
                 {
                     if (hit.distance < nearestDistance)
                     {

@@ -111,8 +111,7 @@ public class PlayerState_TAUNT : PlayerState
         base.Update();
 
         if (mIsTaunting && !mPlayer.mAnimator.GetCurrentAnimatorStateInfo(0).IsName(mTauntAnimationName))
-        {
-            // The taunt animation has finished
+        {          
             mPlayer.mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
         }
     }
